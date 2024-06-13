@@ -4,7 +4,7 @@ import store from "@/store/store";
 import TaskList from "@/components/TaskList.vue";
 import { getTaskService, onGetDataTask, onAddSaveTask } from "@/services";
 
-const params = reactive<{ data: {} }>({ data: {} });
+const params = reactive<{ [key: string]: any }>({});
 const descriptionTask = ref<string>("");
 
 onMounted(() => {
@@ -12,16 +12,16 @@ onMounted(() => {
 });
 
 const onAddTask = async (): Promise<void> => {
-  if (descriptionTask.value === "") {
-    alert("No puedes ingresar valores vacios");
-  } else {
-    params.data = {
-      description: descriptionTask.value,
-    };
-
-    const response = await onAddSaveTask(params.data);
-
-    console.log(response);
+  if (Object.entries(params).length > 0) {
+    const date = getCurrentDateTime();
+    params["created_at"] = date;
+    params["description"] = descriptionTask.value;
+    params["category"] = 3;
+    params["state"] = 1;
+    params["priority"] = 1;
+    const response = await onAddSaveTask(params);
+    console.log(response, 'RESPUESTA');
+    
   }
 };
 
@@ -30,10 +30,25 @@ const getDataTask = async (): Promise<void> => {
   console.log(getTask.config.data);
 };
 
-// const clearDataTask = async():Promise<void> =>{
-//   const getTask = await getDataTask();
-//   console.log(getTask);
-// }
+const getCurrentDateTime = (): string => {
+  const now = new Date();
+
+  // Extract date components
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+
+  // Extract time components
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+
+  // Format date and time
+  const formattedDate = `${day}/${month}/${year}`;
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+  return `${formattedDate} ${formattedTime}`;
+};
 </script>
 
 <template>
@@ -145,7 +160,7 @@ const getDataTask = async (): Promise<void> => {
   border-color: #8e49e8;
 }
 
-.footer{
+.footer {
   display: flex;
   justify-content: center;
   align-items: center;

@@ -31,18 +31,19 @@ export const onGetDataTask = async (): Promise<any> => {
   }
 };
 
-export const onAddSaveTask = async (data: { [key: string]: string }): Promise<any> => {
+export const onAddSaveTask = async (params: { [key: string]: string }): Promise<any> => {
     try {
       const response = await http.post(
-        "/portafolio/authentication/Backend/public/task/", // Reemplaza esto con la URL de tu servicio
-        data, // Envía el objeto recibido directamente como datos en la solicitud
+        "/portafolio/authentication/Backend/public/task/",
+        params,
         {
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTgyNTEzMTAsImV4cCI6MTcxODI1MzExMCwiZGF0YSI6eyJpZFRva2VuIjoiYTY5NjYyNDg0NWVlMjRlZDE5YTFjMDdkYWY2ZTZiMTQ3YTM5MTAxY2E2YmVmMDMyMzJhY2EyN2ZiMWM2MzhmMzYzZDE0YTE1N2ZlYzc3ZDMyYWY5MWRhYTc3NmJkMTY1YTg5OGQwNTE3MDFiOGIwMDA0NzhhNGFmM2Y0ODcwODcifX0.LtPiqfbJWSJWnWYsvth7NBwqYs8yutUJLz4IJmDlesk`
           },
         }
       );
-      return response.data; // O lo que necesites devolver
+      return response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
