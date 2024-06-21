@@ -4,7 +4,24 @@ import store from "@/store/store";
 import TaskList from "@/components/TaskList.vue";
 import { getTaskService, onGetDataTask, onAddSaveTask } from "@/services";
 
-const params = reactive<{ [key: string]: any }>({});
+interface Params {
+  created_at?: string;
+  category?: number;
+  state?: number;
+  priority?: number;
+  description?: string;
+}
+
+const params = reactive<Params>({
+  created_at: undefined,
+  category: undefined,
+  state: undefined,
+  priority: undefined,
+  description: '',
+});
+
+const dataTask = reactive<{ data: Params[] }>({ data: [] });
+
 const descriptionTask = ref<string>("");
 
 onMounted(() => {
@@ -12,18 +29,34 @@ onMounted(() => {
 });
 
 const onAddTask = async (): Promise<void> => {
-  if (Object.entries(params).length > 0) {
+  
+  if (Object.entries(params).length > 0 && params['description'] !="") {
     const date = getCurrentDateTime();
-    params["created_at"] = date;
-    params["description"] = descriptionTask.value;
-    params["category"] = 3;
-    params["state"] = 1;
-    params["priority"] = 1;
-    const response = await onAddSaveTask(params);
-    console.log(response, 'RESPUESTA');
+    params.created_at = date;
+    params.category = 3;
+    params.state = 1;
+    params.priority = 1;
+
+    const newTask = { ...params };
+
+    dataTask.data.push(newTask);
+    // const response = await onAddSaveTask(newTask);
+    // console.log(response, 'RESPUESTA');
+
+    // Clear the input fields
+    params.description = '';
+    descriptionTask.value = '';
     
+    // const response = await onAddSaveTask(params);
+    // console.log(response, 'RESPUESTA');
   }
 };
+
+const oninputField = (key: keyof Params, event: Event): void => {
+  const target = event.target as HTMLInputElement;
+  params.description! = target.value;
+}
+
 
 const getDataTask = async (): Promise<void> => {
   const getTask = await onGetDataTask();
@@ -49,6 +82,8 @@ const getCurrentDateTime = (): string => {
 
   return `${formattedDate} ${formattedTime}`;
 };
+
+const onDelete = (valueIndex: number) => {};
 </script>
 
 <template>
@@ -63,6 +98,7 @@ const getCurrentDateTime = (): string => {
             placeholder="Add your new todo"
             v-model="descriptionTask"
             @keyup.enter="onAddTask()"
+            @input="oninputField('description', $event)"
           />
           <button
             class="w-[50px] h-[100%] bg-[#721ce3] hover:bg-[#8e49e8] hover:scale-[1.1] rounded-md text-white"
@@ -94,8 +130,12 @@ const getCurrentDateTime = (): string => {
         <!----TASK-->
         <div class="containerList h-[270px] overflow-y-scroll">
           <ul class="todoList flex flex-col gap-[0.65em]">
-            <li v-for="n in 20">
-              <task-list />
+            <li class="flex flex-col gap-2">
+              <task-list @on-delete="onDelete"  
+              v-for="(item, index) in dataTask.data" :key="index"
+              :data-value="item"
+              :value-index="index"
+              />
             </li>
           </ul>
         </div>
