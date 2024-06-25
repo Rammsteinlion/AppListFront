@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import { loginService } from "@/services";
 import { ref, onMounted } from 'vue';
 import { store } from "@/store/store";
-// import ShowAlert from '../components/ShowAlert.vue';
+import Alert from '@/components/Alerts.vue'
 
 
 onMounted(()=>{
@@ -143,6 +143,7 @@ const info = ():void =>{
         </div>
       </div>
     </div>
+    <Alert/>
 </template>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
