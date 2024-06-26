@@ -54,7 +54,7 @@ const onShowALert = ():void =>{
 }
 </script>
 <template>
-  <div class="container">
+  <div class="container overflow-hidden">
       <div class="forms-container">
         <div class="signin-signup">
           <form action="#" class="sign-in-form">
@@ -146,8 +146,9 @@ const onShowALert = ():void =>{
           <img src="../assets/img/register.svg" class="image" alt="" />
         </div>
       </div>
+      <Alert :is-o-pen="isOpen" @update="onShowALert"/>
     </div>
-    <Alert :is-o-pen="isOpen" @update="onShowALert"/>
+
 </template>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");

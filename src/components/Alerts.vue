@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted,watch } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -16,27 +16,40 @@ const emit = defineEmits<{
 
 const isOpen = ref<boolean>(props.isOPen);
 
-onMounted(() => {
-  isOpen.value = !isOpen.value;
-});
+const resetProgressBar = async () => {
+  const progress = document.querySelector('.progress') as HTMLElement;
+  if (progress) {
+    progress.classList.remove('active');
+    await nextTick();
+    progress.classList.add('active');
+  }
+};
 
-watch(isOpen, (newVal) => {
+watch(isOpen, async (newVal) => {
   if (newVal) {
-    const progress = document.querySelector('.progress') as HTMLElement;
-    if (progress) {
-      progress.classList.add('active');
-    }
+    await resetProgressBar();
+
+    // Remove the progress bar after the animation ends
+    setTimeout(() => {
+      const progress = document.querySelector('.progress') as HTMLElement;
+      if (progress) {
+        progress.classList.remove('active');
+      }
+      emit("update", false);  // Close the toast after the animation
+    }, 5000);  // Match this duration with your animation duration
   }
 });
 
-const OnCloseAlert = (): void => {
+const onCloseAlert = async (): Promise<void> => {
   const progress = document.querySelector('.progress') as HTMLElement;
   if (progress) {
     progress.classList.remove('active');
   }
 
   emit("update", false);
+  await resetProgressBar();
 };
+
 </script>
 <template>
   <div :class="['toast', { active: isOPen }]">
@@ -48,7 +61,7 @@ const OnCloseAlert = (): void => {
         <div class="text text-2">Your Changes ahs been saved</div>
       </div>
     </div>
-    <i class="fa-solid fa-xmark close" @click.stop="OnCloseAlert"></i>
+    <i class="fa-solid fa-xmark close" @click.stop="onCloseAlert"></i>
 
     <div class="progress"></div>
   </div>
@@ -138,13 +151,17 @@ const OnCloseAlert = (): void => {
   height: 100%;
   width: 100%;
   background-color: #4070f4;
+  transition: none;
 }
 
-.progress.active:before{
-    animation: progress 5s linear forwards;
+.progress.active:before {
+  animation: progress 5s linear forwards;
 }
 
 @keyframes progress {
+  0% {
+    right: 0;
+  }
   100% {
     right: 100%;
   }
