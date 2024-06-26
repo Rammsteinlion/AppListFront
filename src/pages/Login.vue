@@ -48,6 +48,10 @@ const info = ():void =>{
   });
   
 }
+
+const onShowALert = ():void =>{
+  isOpen.value = !isOpen.value
+}
 </script>
 <template>
   <div class="container">
@@ -63,7 +67,7 @@ const info = ():void =>{
               <i class="fas fa-lock"></i>
               <input type="password" placeholder="Password" />
             </div>
-            <input type="submit" value="Login" class="btn solid" />
+            <input type="submit" value="Login" class="btn solid"  @click.stop.prevent="onShowALert"/>
             <p class="social-text">Or Sign in with social platforms</p>
             <div class="social-media">
               <a href="#" class="social-icon">
@@ -135,7 +139,7 @@ const info = ():void =>{
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
               laboriosam ad deleniti.
             </p>
-            <button class="btn transparent" id="sign-in-btn">
+            <button type="submit" class="btn transparent" id="sign-in-btn">
               Sign in
             </button>
           </div>
@@ -143,7 +147,7 @@ const info = ():void =>{
         </div>
       </div>
     </div>
-    <Alert/>
+    <Alert :is-o-pen="isOpen" @update="onShowALert"/>
 </template>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");

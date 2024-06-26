@@ -1,6 +1,45 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, onMounted,watch } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    isOPen: boolean;
+  }>(),
+  {
+    isOPen: false,
+  }
+);
+
+const emit = defineEmits<{
+  (e: "update", isOpen: boolean): void;
+}>();
+
+const isOpen = ref<boolean>(props.isOPen);
+
+onMounted(() => {
+  isOpen.value = !isOpen.value;
+});
+
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    const progress = document.querySelector('.progress') as HTMLElement;
+    if (progress) {
+      progress.classList.add('active');
+    }
+  }
+});
+
+const OnCloseAlert = (): void => {
+  const progress = document.querySelector('.progress') as HTMLElement;
+  if (progress) {
+    progress.classList.remove('active');
+  }
+
+  emit("update", false);
+};
+</script>
 <template>
-  <div class="toast">
+  <div :class="['toast', { active: isOPen }]">
     <div class="toast-content">
       <i class="fas fa-solid fa-check check"> </i>
 
@@ -9,7 +48,7 @@
         <div class="text text-2">Your Changes ahs been saved</div>
       </div>
     </div>
-    <i class="fa-solid fa-xmark close"></i>
+    <i class="fa-solid fa-xmark close" @click.stop="OnCloseAlert"></i>
 
     <div class="progress"></div>
   </div>
@@ -25,11 +64,19 @@
   padding: 20px 35px 20px 25px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   border-left: 6px solid #4070f4;
+  overflow: hidden;
+  transform: translateX(calc(100% + 30px));
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
 }
 
 .toast .toast-content {
   display: flex;
   align-items: center;
+}
+
+.toast.active {
+  transform: translateX(0%);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
 }
 
 .toast-content .check {
@@ -49,29 +96,57 @@
   margin: 0 20px;
 }
 
-.message{
-    font-size: 20px;
-    font-weight: 400;
-    color: #66666666;
+.message {
+  font-size: 20px;
+  font-weight: 400;
+  color: #66666666;
 }
 
-.message .text.text-1{
-    font-weight: 600;
-    color: #3333;
+.message .text.text-1 {
+  font-weight: 600;
+  color: #3333;
 }
 
-.toast .close{
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    padding: 5px;
-    cursor: pointer;
-    opacity: 0.7;
+.toast .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  padding: 5px;
+  cursor: pointer;
+  opacity: 0.7;
 }
 
-.close:hover{
-    opacity: 1;
-    scale: 1.1;
+.toast .close:hover {
+  opacity: 1;
+  scale: 1.1;
 }
 
+.toast .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: #ddd;
+}
+
+.toast .progress::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 50px;
+  height: 100%;
+  width: 100%;
+  background-color: #4070f4;
+}
+
+.progress.active:before{
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+  100% {
+    right: 100%;
+  }
+}
 </style>
