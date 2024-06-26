@@ -4,6 +4,7 @@ import { ref, onMounted, watch, nextTick } from "vue";
 const props = withDefaults(
   defineProps<{
     isOPen: boolean;
+    time?: number;
   }>(),
   {
     isOPen: false,
@@ -16,43 +17,31 @@ const emit = defineEmits<{
 
 const isOpen = ref<boolean>(props.isOPen);
 
+onMounted(() => {
+
+});
+
 const resetProgressBar = async () => {
-  const progress = document.querySelector('.progress') as HTMLElement;
+  const progress = document.querySelector(".progress") as HTMLElement;
   if (progress) {
-    progress.classList.remove('active');
+    progress.classList.remove("active");
     await nextTick();
-    progress.classList.add('active');
+    progress.classList.add("active");
   }
 };
 
-watch(isOpen, async (newVal) => {
-  if (newVal) {
-    await resetProgressBar();
-
-    // Remove the progress bar after the animation ends
-    setTimeout(() => {
-      const progress = document.querySelector('.progress') as HTMLElement;
-      if (progress) {
-        progress.classList.remove('active');
-      }
-      emit("update", false);  // Close the toast after the animation
-    }, 5000);  // Match this duration with your animation duration
-  }
-});
-
 const onCloseAlert = async (): Promise<void> => {
-  const progress = document.querySelector('.progress') as HTMLElement;
+  const progress = document.querySelector(".progress") as HTMLElement;
   if (progress) {
-    progress.classList.remove('active');
+    progress.classList.remove("active");
   }
 
   emit("update", false);
   await resetProgressBar();
 };
-
 </script>
 <template>
-  <div :class="['toast', { active: isOPen }]">
+  <div :class="['toast z-20']">
     <div class="toast-content">
       <i class="fas fa-solid fa-check check"> </i>
 
@@ -78,7 +67,7 @@ const onCloseAlert = async (): Promise<void> => {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   border-left: 6px solid #4070f4;
   overflow: hidden;
-  transform: translateX(calc(100% + 30px));
+  /* transform: translateX(calc(100% + 30px)); */
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
 }
 
@@ -154,7 +143,7 @@ const onCloseAlert = async (): Promise<void> => {
   transition: none;
 }
 
-.progress.active:before {
+.progress.active::before {
   animation: progress 5s linear forwards;
 }
 
